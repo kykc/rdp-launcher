@@ -196,16 +196,21 @@ fn main() {
         Mode::Gui => run_gui(),
     };
 
+    let mut has_password = false;
+
     GLOBAL_STATE.with(|state| {
         args.push(String::from("/p:") + &state.borrow().password);
         args.push(String::from("/u:") + &state.borrow().user);
         args.push(String::from("/v:") + &state.borrow().server);
+        has_password = state.borrow().password.len() > 0;
     });
 
-    Command::new(cmd)
-        .args(&args)
-        .stdout(Stdio::null())
-        //.stderr(Stdio::null())
-        .spawn()
-        .expect("Cannot run RDP process");
+    if has_password {
+        Command::new(cmd)
+            .args(&args)
+            .stdout(Stdio::null())
+            //.stderr(Stdio::null())
+            .spawn()
+            .expect("Cannot run RDP process");
+    }
 }
